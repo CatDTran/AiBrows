@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 /**
  * Created by Tony Stark on 5/24/2017.
@@ -19,12 +20,13 @@ import android.view.ViewGroup;
 
 public class CameraFragment extends Fragment {
 
+    private Camera mCamera;
+    private CameraPreview mPreview;
     private static final String TAG = "CameraFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
     }
 
@@ -32,6 +34,12 @@ public class CameraFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_camera, container, false);
         setHasOptionsMenu(true);
+        //create a camera instance
+        mCamera = getCameraInstance();
+        //then create a camera preview for it
+        mPreview = new CameraPreview(getContext(), mCamera);
+        FrameLayout preview = (FrameLayout) rootView.findViewById(R.id.camera_preview);
+        preview.addView(mPreview);
         return rootView;
     }
 
