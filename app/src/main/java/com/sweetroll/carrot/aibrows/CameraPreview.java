@@ -28,7 +28,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mHolder.addCallback(this);
     }
 
-    //Helper method to tell the camera where to display the preview
+
+    @Override
+    //Override to tell the camera where to display the preview
     public void surfaceCreated(SurfaceHolder holder){
         try{
             mCamera.setPreviewDisplay(holder);
@@ -38,11 +40,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    @Override
+    //Override to tell what happens when surface is destroyed
     public void surfaceDestroyed(SurfaceHolder holder) {
         // empty. Take care of releasing the Camera preview in your activity.
     }
 
-    //Helper method to determine what to do when preview change or rotate
+
+    @Override
+    //Override to tell what happens when surface changes
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h){
         if(mHolder == null){
             return;

@@ -37,7 +37,7 @@ public class CameraFragment extends Fragment {
         //create a camera instance
         mCamera = getCameraInstance();
         //then create a camera preview for it
-        mPreview = new CameraPreview(getContext(), mCamera);
+        mPreview = new CameraPreview(getActivity(), mCamera);
         FrameLayout preview = (FrameLayout) rootView.findViewById(R.id.camera_preview);
         preview.addView(mPreview);
         return rootView;
@@ -58,6 +58,25 @@ public class CameraFragment extends Fragment {
             return false;
         }
     }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        //release camera before when fragment is on pause
+        if (mCamera != null) {
+            mCamera.release();
+        }
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        //release camera when fragment is stoped
+        if (mCamera != null) {
+            mCamera.release();
+        }
+    }
+
 
     //A helper method which provides a safe way to get an instance of the Camera object
     public static Camera getCameraInstance(){
