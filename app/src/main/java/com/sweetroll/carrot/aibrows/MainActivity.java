@@ -11,7 +11,7 @@ import android.os.Bundle;
 
 public class MainActivity extends FragmentActivity {
 
-    private static final int NUM_PAGES = 3;
+    private static final int NUM_PAGES = 1;
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
     private final String TAG = "FragmentActivity";

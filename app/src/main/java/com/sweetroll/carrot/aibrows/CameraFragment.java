@@ -1,10 +1,12 @@
 package com.sweetroll.carrot.aibrows;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,23 +23,25 @@ import android.widget.FrameLayout;
 public class CameraFragment extends Fragment {
 
     private Camera mCamera;
+    private int mCameraID = 0;
     private CameraPreview mPreview;
     private static final String TAG = "CameraFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+    }
 
+    @Override
+    public void onResume(){
+        super.onResume();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_camera, container, false);
         setHasOptionsMenu(true);
-        //create a camera instance
-        mCamera = getCameraInstance();
-        //then create a camera preview for it
-        mPreview = new CameraPreview(getActivity(), mCamera);
+        mPreview = new CameraPreview(getActivity(), mCamera, mCameraID);
         FrameLayout preview = (FrameLayout) rootView.findViewById(R.id.camera_preview);
         preview.addView(mPreview);
         return rootView;
@@ -71,18 +75,14 @@ public class CameraFragment extends Fragment {
     @Override
     public void onStop(){
         super.onStop();
-        //release camera when fragment is stoped
-        if (mCamera != null) {
-            mCamera.release();
-        }
     }
 
 
     //A helper method which provides a safe way to get an instance of the Camera object
-    public static Camera getCameraInstance(){
+    public static Camera getCameraInstance(int cameraID){
         Camera camera = null;
         try {
-            camera = Camera.open(0); // attempt to get a Camera instance
+            camera = Camera.open(cameraID); // attempt to get a Camera instance
         }
         catch (Exception e){
             // Camera is not available (in use or does not exist)
