@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -41,6 +43,8 @@ public class CameraFragment extends Fragment {
     private int mCameraID = 0;
     private CameraPreview mPreview;
     public ImageButton mCaptureButton;
+    public ImageButton mOvalButton;
+    public ImageView mOvalFace;
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
     private static final String TAG = "CameraFragment";
@@ -62,8 +66,21 @@ public class CameraFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_camera, container, false);
+        final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_camera, container, false);
         mCaptureButton = (ImageButton) rootView.findViewById(R.id.button_capture);
+        mOvalFace = (ImageView) rootView.findViewById(R.id.oval_face);
+        mOvalButton = (ImageButton) rootView.findViewById(R.id.oval_button);
+        mOvalButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOvalFace.getVisibility() == View.VISIBLE){
+                    mOvalFace.setVisibility(View.INVISIBLE);
+                }
+                else{
+                    mOvalFace.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         setHasOptionsMenu(false);
         mPreview = new CameraPreview(getActivity(), this, mCamera, mCameraID);
         FrameLayout preview = (FrameLayout) rootView.findViewById(R.id.camera_preview);
