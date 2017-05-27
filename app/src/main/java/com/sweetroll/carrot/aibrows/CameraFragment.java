@@ -165,6 +165,8 @@ public class CameraFragment extends Fragment {
                 fos.write(data);
                 String filePath = fos.getFD().toString();
                 fos.close();
+                //automatically start camera's preview again after taking a picture
+                camera.startPreview();
                 Log.d(TAG, "File saved successfully at " + pictureFile.getAbsolutePath());
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "File not found: " + e.getMessage());

@@ -1,10 +1,19 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar"> <!--use "android:Theme.Holo.Light.DarkActionBar" as parent for options menu to show up-->
+    <style name="AppTheme" parent="android:Theme.Holo.Light"> <!--use "android:Theme.Holo.Light.DarkActionBar" as parent for options menu to show up-->
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:actionBarStyle">@style/MyActionBarStyle</item>
+    </style>
+    <!--custom action bar color-->
+    <style name="MyActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">@color/custom_teal</item>
+    </style>
+
+    <!--miscellaneous style here-->
+    <style name="misc">
+        <item name="colorPrimary">@color/custom_teal</item>
+        <item name="colorPrimaryDark">@color/custom_teal</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
