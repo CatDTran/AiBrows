@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.File;
@@ -37,7 +38,7 @@ public class CameraFragment extends Fragment {
     private Camera mCamera;
     private int mCameraID = 0;
     private CameraPreview mPreview;
-    public Button mCaptureButton;
+    public ImageButton mCaptureButton;
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
     private static final String TAG = "CameraFragment";
@@ -60,7 +61,7 @@ public class CameraFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_camera, container, false);
-        mCaptureButton = (Button) rootView.findViewById(R.id.button_capture);
+        mCaptureButton = (ImageButton) rootView.findViewById(R.id.button_capture);
         setHasOptionsMenu(false);
         mPreview = new CameraPreview(getActivity(), this, mCamera, mCameraID);
         FrameLayout preview = (FrameLayout) rootView.findViewById(R.id.camera_preview);

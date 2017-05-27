@@ -15,29 +15,44 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/oval_face"
+        android:contentDescription="Opening camera..."
         android:layout_centerInParent="true"/>
     <!--LinearLayout for controls panel-->
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
-        android:background="@color/colorAccent">
+        android:background="@color/custom_gray"
+        style="?android:buttonBarStyle">
+
+        <!--Open gallery button-->
+        <ImageButton
+            android:id="@+id/button_gallery"
+            android:src="@drawable/gallery_open_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            style="?android:buttonBarButtonStyle"/>
 
         <!--Capture button to take photo-->
-        <Button
+        <ImageButton
             android:id="@+id/button_capture"
-            android:background="@mipmap/capture_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
+            android:src="@drawable/camera_capture_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            style="?android:buttonBarButtonStyle"/>
+
         <!--Oval face button-->
-        <Button
+        <ImageButton
             android:id="@+id/oval_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_tag_faces_black_24dp"
-            android:layout_toStartOf="@id/button_capture"/>
-    </RelativeLayout>
+            android:src="@drawable/oval_show_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            style="?android:buttonBarButtonStyle"/>
+    </LinearLayout>
 
 </RelativeLayout>
