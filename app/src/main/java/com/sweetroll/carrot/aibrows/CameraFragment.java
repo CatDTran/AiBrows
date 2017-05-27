@@ -45,6 +45,7 @@ public class CameraFragment extends Fragment {
     public ImageButton mCaptureButton;
     public ImageButton mOvalButton;
     public ImageView mOvalFace;
+    private ImageButton mGallery;
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
     private static final String TAG = "CameraFragment";
