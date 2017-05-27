@@ -2,6 +2,7 @@ package com.sweetroll.carrot.aibrows;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -12,6 +13,7 @@ import android.view.SurfaceHolder;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutorCompletionService;
 
 /**
@@ -46,10 +48,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try{
             mCamera = Camera.open();
             Log.d(TAG, "surfaceCreated(): mCamera is " + mCamera);
-            //set camera's output jpeg quality to highest (100)
+            //set camera's jpeg quality, auto focus mode, highest picture size, OnClickListener...
             Camera.Parameters params = mCamera.getParameters();
+            List<Camera.Size> sizes = params.getSupportedPictureSizes();
             params.setJpegQuality(100);
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            params.setPictureSize(getBestPictureSizes(sizes).width, getBestPictureSizes(sizes).height);
+            Point displaySize = new Point();
+            mContext.getWindowManager().getDefaultDisplay().getSize(displaySize);
+            //params.setPreviewSize(displaySize.x, displaySize.y);
             mCamera.setParameters(params);
             mParentFragment.implementOnclickListener(mCamera);
         } catch (Exception e){
@@ -89,8 +96,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             Log.d(TAG, "surfaceChanged(): No existing preview to stop");
         }
         //Now set new preview setting here, such as width, height, orientation ...etc. When setting preview size, must use values returned from getSupportedPreviewSizes() only
-        /*......................new setting code here........................
-        ........................new setting code here........................*/
         setCameraDisplayOrientation(mContext, 0, mCamera);
         // start preview with the new settings
         try {
@@ -133,6 +138,19 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     //Helper method to get the camera instance opened by this class
     public Camera getCamera(){
         return mCamera;
+    }
+
+    //Helper method to the best supported picture size
+    private Camera.Size getBestPictureSizes(List<Camera.Size> sizes){
+        Camera.Size bestSize = sizes.get(0);
+        for( int i = 0; i < sizes.size(); i++){
+            if((sizes.get(i).width * sizes.get(i).height) > (bestSize.width * bestSize.height))
+            {
+                bestSize = sizes.get(i);
+            }
+        }
+        Log.d(TAG, Integer.toString(bestSize.width) + " x " + Integer.toString(bestSize.height));
+        return bestSize;
     }
 
 }

@@ -43,8 +43,18 @@ public class CameraFragment extends Fragment {
     private static final String TAG = "CameraFragment";
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        //hide action (title) bar in this camera fragment
+        if(getActivity().getActionBar() != null) {
+            getActivity().getActionBar().hide();
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
