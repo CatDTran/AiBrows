@@ -4,9 +4,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import java.text.SimpleDateFormat;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,7 +16,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
+
+import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 /**
  * Created by Tony Stark on 5/24/2017.
@@ -25,6 +37,9 @@ public class CameraFragment extends Fragment {
     private Camera mCamera;
     private int mCameraID = 0;
     private CameraPreview mPreview;
+    public Button mCaptureButton;
+    public static final int MEDIA_TYPE_IMAGE = 1;
+    public static final int MEDIA_TYPE_VIDEO = 2;
     private static final String TAG = "CameraFragment";
 
     @Override
@@ -33,18 +48,20 @@ public class CameraFragment extends Fragment {
     }
 
     @Override
-    public void onResume(){
-        super.onResume();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_camera, container, false);
-        setHasOptionsMenu(true);
-        mPreview = new CameraPreview(getActivity(), mCamera, mCameraID);
+        mCaptureButton = (Button) rootView.findViewById(R.id.button_capture);
+        setHasOptionsMenu(false);
+        mPreview = new CameraPreview(getActivity(), this, mCamera, mCameraID);
         FrameLayout preview = (FrameLayout) rootView.findViewById(R.id.camera_preview);
         preview.addView(mPreview);
         return rootView;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        Log.d(TAG, "onResume(): mCamera is " + mPreview.getCamera());
     }
 
     @Override
@@ -91,4 +108,73 @@ public class CameraFragment extends Fragment {
         return camera; // returns null if camera is unavailable
     }
 
+    //helper method to return the capture button
+    public void implementOnclickListener(final Camera camera){
+        mCaptureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                camera.takePicture(null, null, mPicture);
+            }
+        });
+    }
+
+    //Implement PictureCallBack interface to save captured pictures
+    private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
+        //this callback method get called when a picture is taken
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+            Log.d(TAG, "onPictureTaken() called");
+            File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
+            if (pictureFile == null){
+                Log.d(TAG, "Error creating media file, check storage permissions");
+                return;
+            }
+            //try to write picture out to file
+            try {
+                FileOutputStream fos = new FileOutputStream(pictureFile);
+                fos.write(data);
+                String filePath = fos.getFD().toString();
+                fos.close();
+                Log.d(TAG, "File saved successfully at " + pictureFile.getAbsolutePath());
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, "File not found: " + e.getMessage());
+            } catch (IOException e) {
+                Log.d(TAG, "Error accessing file: " + e.getMessage());
+            }
+        }
+    };
+
+    //Helper method to create an URI for saving image or video
+    private static Uri getOutputMediaFileUri(int type){
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+
+    //Helper method to save image an video
+    private static File getOutputMediaFile(int type){
+        // check if the external storage (SD card) is mounted and available for saving media files
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+            File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "BrowsRuzler");
+            //if mediaStorageDir does not exist
+            if(!mediaStorageDir.exists()){
+                //if failed trying to create a directory
+                if(!mediaStorageDir.mkdir()){
+                    Log.d(TAG, "failed to create directory");
+                    return null;
+                }
+            }
+            //Create media file name
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            File mediaFile;
+            if (type == MEDIA_TYPE_IMAGE){
+                mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
+            } else {
+                Log.d(TAG, "Wrong media type");
+                return null;
+            }
+            return mediaFile;
+        } else{ //if external storage (SD card) is not available, then let the user know with a Toast
+            Toast.makeText(MainActivity.getContext(), "External Storage (SD card) is not available", Toast.LENGTH_LONG).show();
+            return null;
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.sweetroll.carrot.aibrows;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -45,13 +46,26 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position){
-            return new CameraFragment();
+            //return different fragment depending on the position of the adapter. In other words, each fragment corresponding to a position in the adapter stack
+            switch (position){
+                case 0:
+                    return new CameraFragment();
+                case 1:
+                    return new CameraFragment();
+                default:
+                    return new CameraFragment();
+            }
+
         }
 
         @Override
         public int getCount(){
             return NUM_PAGES;
         }
+    }
+
+    public static Context getContext(){
+        return MainActivity.getContext();
     }
 
 }

@@ -3,11 +3,13 @@ package com.sweetroll.carrot.aibrows;
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -22,11 +24,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private Camera mCamera;
     private int mCameraID;
     private FragmentActivity mContext;
+    private CameraFragment mParentFragment;
     private static final String TAG = "CameraPreview";
 
     //Constructor for this class which takes a camera object as one of its arguments
-    public CameraPreview(FragmentActivity context, Camera camera, int cameraID){
+    public CameraPreview(FragmentActivity context, CameraFragment parentFragment, Camera camera, int cameraID){
         super(context);
+        mParentFragment = parentFragment;
         mContext =  context;
         mCameraID = cameraID;
         // Install a SurfaceHolder.Callback so we get notified when the underlying surface is created and destroyed
@@ -38,13 +42,23 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     @Override
     //Override to tell the camera where to display the preview
     public void surfaceCreated(SurfaceHolder holder){
-        //Camera instance should be instatiated in surfaceCreated()
-        mCamera = Camera.open();
+        //Camera instance should be instantiated in surfaceCreated()
         try{
-            if(mCamera != null) {
-                mCamera.setPreviewDisplay(holder);
-                mCamera.startPreview();
-            }
+            mCamera = Camera.open();
+            Log.d(TAG, "surfaceCreated(): mCamera is " + mCamera);
+            //set camera's output jpeg quality to highest (100)
+            Camera.Parameters params = mCamera.getParameters();
+            params.setJpegQuality(100);
+            params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            mCamera.setParameters(params);
+            mParentFragment.implementOnclickListener(mCamera);
+        } catch (Exception e){
+            Toast.makeText(mContext, "Camera cannot be opened. Perhaps, camera is being used by other applications.", Toast.LENGTH_SHORT).show();
+        }
+
+        try{
+            mCamera.setPreviewDisplay(holder);
+            mCamera.startPreview();
         } catch (IOException ioe){
             Log.d(TAG, "surfaceCreated(): Error setting camera preview" + ioe.getMessage());
         }
@@ -53,6 +67,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     @Override
     //Override to tell what happens when surface is destroyed
     public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.d(TAG, "surfaceDestroyed() called");
         //Camera instance should be released in surfaceDestroyed()
         if( mCamera != null) {
             mCamera.release();
@@ -63,6 +78,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     @Override
     //Override to tell what happens when surface changes
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h){
+        Log.d(TAG, "onSurfaceChanged() called");
         if(mHolder == null){
             return;
         }
@@ -83,7 +99,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         } catch (Exception e){
             Log.d(TAG, "surfaceChanged(): Error starting camera preview: " + e.getMessage());
         }
-        Log.d(TAG, "onSurfaceChanged() called");
     }
 
     //Helper method to get the correct camera orientation on display
@@ -113,6 +128,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         } catch (Exception e){
             Log.e(TAG, e.toString());
         }
+    }
+
+    //Helper method to get the camera instance opened by this class
+    public Camera getCamera(){
+        return mCamera;
     }
 
 }
