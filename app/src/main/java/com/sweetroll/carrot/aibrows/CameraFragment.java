@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import java.text.SimpleDateFormat;
+
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -124,7 +126,7 @@ public class CameraFragment extends Fragment {
         mCaptureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                camera.takePicture(null, null, mPicture);
+                camera.takePicture(mShutterCallback, null, mPicture);
             }
         });
     }
@@ -152,6 +154,14 @@ public class CameraFragment extends Fragment {
             } catch (IOException e) {
                 Log.d(TAG, "Error accessing file: " + e.getMessage());
             }
+        }
+    };
+
+    //Implement ShuttleCallBack to place sound when picture is taken
+    private final Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback() {
+        public void onShutter() {
+            AudioManager mgr = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+            mgr.playSoundEffect(AudioManager.FLAG_PLAY_SOUND);
         }
     };
 
