@@ -4,60 +4,84 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <!--Layout for the camera fragment-->
-    <FrameLayout
-        android:id="@+id/camera_preview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <!--Oval shape-->
-    <ImageView
-        android:id="@+id/oval_face"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/oval_face"
-        android:contentDescription="Opening camera..."
-        android:layout_centerInParent="true"/>
-    <!--LinearLayout for controls panel-->
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/camera_control_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:background="@color/custom_gray"
-        style="?android:buttonBarStyle">
+        android:layout_height="match_parent">
+        <!--Layout for the camera fragment-->
+        <FrameLayout
+            android:id="@+id/camera_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
-        <!--Open gallery button-->
-        <ImageButton
-            android:id="@+id/button_gallery"
-            style="?android:buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:soundEffectsEnabled="true"
-            android:src="@drawable/gallery_open_button" />
+        <!--Oval shape-->
+        <ImageView
+            android:id="@+id/oval_face"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/oval_face"
+            android:layout_centerInParent="true"/>
+        <!--LinearLayout for controls panel-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:background="@color/custom_gray"
+            style="?android:buttonBarStyle">
 
-        <!--Capture button to take photo-->
-        <ImageButton
-            android:id="@+id/button_capture"
-            style="?android:buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:soundEffectsEnabled="true"
-            android:src="@drawable/camera_capture_button" />
+            <!--Open gallery button-->
+            <ImageButton
+                android:id="@+id/button_gallery"
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:soundEffectsEnabled="true"
+                android:src="@drawable/gallery_open_button" />
 
-        <!--Oval face button-->
+            <!--Capture button to take photo-->
+            <ImageButton
+                android:id="@+id/button_capture"
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:soundEffectsEnabled="true"
+                android:src="@drawable/camera_capture_button" />
+
+            <!--Oval face button-->
+            <ImageButton
+                android:id="@+id/oval_button"
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:soundEffectsEnabled="true"
+                android:src="@drawable/oval_show_button" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/picture_view_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible">
+        <!--ImageView to display picture returned from file browser-->
+        <ImageView
+            android:id="@+id/picture_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
         <ImageButton
-            android:id="@+id/oval_button"
-            style="?android:buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:soundEffectsEnabled="true"
-            android:src="@drawable/oval_show_button" />
-    </LinearLayout>
+            android:id="@+id/close_image_view_button"
+            android:background="@color/transparent"
+            android:src="@drawable/picture_close_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="4dp"
+            android:paddingBottom="4dp"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

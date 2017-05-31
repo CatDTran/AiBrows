@@ -52,7 +52,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             Camera.Parameters params = mCamera.getParameters();
             List<Camera.Size> sizes = params.getSupportedPictureSizes();
             params.setJpegQuality(100);
-            if (params.getFocusMode().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+            if (params.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             }
             params.setPictureSize(getBestPictureSizes(sizes).width, getBestPictureSizes(sizes).height);

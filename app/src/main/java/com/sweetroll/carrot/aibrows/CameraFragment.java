@@ -2,7 +2,10 @@ package com.sweetroll.carrot.aibrows;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import java.text.SimpleDateFormat;
 
@@ -11,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +27,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.io.File;
@@ -31,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
+import static android.app.Activity.RESULT_OK;
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 /**
@@ -43,11 +49,14 @@ public class CameraFragment extends Fragment {
     private int mCameraID = 0;
     private CameraPreview mPreview;
     public ImageButton mCaptureButton;
-    public ImageButton mOvalButton;
-    public ImageView mOvalFace;
-    private ImageButton mGallery;
+    private ImageButton mOvalButton;
+    private ImageButton mGalleryButton;
+    private ImageView mOvalFace;
+    private RelativeLayout mCameraControlLayout;
+    private RelativeLayout mPictureViewLayout;
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
+    private static final int REQUEST_CODE_PICTURE = 69;
     private static final String TAG = "CameraFragment";
 
     @Override
@@ -68,8 +77,11 @@ public class CameraFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_camera, container, false);
+        mCameraControlLayout = (RelativeLayout) rootView.findViewById(R.id.camera_control_layout);
+        mPictureViewLayout = (RelativeLayout) rootView.findViewById((R.id.picture_view_layout));
         mCaptureButton = (ImageButton) rootView.findViewById(R.id.button_capture);
         mOvalFace = (ImageView) rootView.findViewById(R.id.oval_face);
+        //onClick() functionality for display oval button
         mOvalButton = (ImageButton) rootView.findViewById(R.id.oval_button);
         mOvalButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +92,15 @@ public class CameraFragment extends Fragment {
                 else{
                     mOvalFace.setVisibility(View.VISIBLE);
                 }
+            }
+        });
+        //onClick() functionality for gallery button
+        mGalleryButton = (ImageButton) rootView.findViewById(R.id.button_gallery);
+        mGalleryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("image/*");
+                startActivityForResult(intent, REQUEST_CODE_PICTURE);
             }
         });
         setHasOptionsMenu(false);
@@ -99,6 +120,15 @@ public class CameraFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_camera_menu, menu);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        //first check if request code, result code, returned from image picking activity is appropriate
+        if ((requestCode == REQUEST_CODE_PICTURE) && (resultCode == RESULT_OK) && (data.getData() != null)){
+            Uri uri = data.getData();
+            displayPictureFromFile(mCameraControlLayout, mPictureViewLayout, data);
+        }
     }
 
     // Check if this device has a camera
@@ -217,5 +247,35 @@ public class CameraFragment extends Fragment {
             Toast.makeText(MainActivity.getContext(), "External Storage (SD card) is not available", Toast.LENGTH_LONG).show();
             return null;
         }
+    }
+
+    //Helper method to hide camera control layout and load a picture from file into image view layout
+    private void displayPictureFromFile(final RelativeLayout cameraControlLayout, final RelativeLayout pictureViewLayout, Intent data){
+        cameraControlLayout.setVisibility(View.INVISIBLE);
+        pictureViewLayout.setVisibility(View.VISIBLE);
+        ImageButton closeImageButton = (ImageButton) pictureViewLayout.findViewById(R.id.close_image_view_button);
+        ImageView imageView = (ImageView) pictureViewLayout.findViewById(R.id.picture_view);
+        //get data from intent, convert to bitmap and display it on the ImageView
+        Uri uri = data.getData();
+        Log.d(TAG, "uri: " + uri.toString());
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        //try to get bitmap from uri using ContentResolver
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+            Log.d(TAG, "Uri's scheme is: " + uri.getScheme());
+            imageView.setImageBitmap(bitmap);
+        } catch (Exception e){
+            Log.d(TAG, e.toString());
+            Toast.makeText(getContext(), "Failed to display image file", Toast.LENGTH_LONG).show();
+        }
+        //implement onClickListener for the close picture button
+        closeImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pictureViewLayout.setVisibility(View.INVISIBLE);
+                cameraControlLayout.setVisibility(View.VISIBLE);
+            }
+        });
     }
 }
